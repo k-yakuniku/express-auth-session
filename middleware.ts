@@ -1,7 +1,7 @@
 import { PassportStatic } from "passport";
 import passportLocal from "passport-local";
 import { IUsersSelect, UsersModel } from "./db/Users";
-import bcrypt from "bcrypt";
+import argon2 from "argon2";
 
 const LocalStrategy = passportLocal.Strategy;
 
@@ -19,7 +19,7 @@ export const passportInitialize = (passport: PassportStatic) => {
           return done(null, false, { message: "Not_User" });
         }
         let { hashedPassword, ...rest } = user.toObject();
-        const isMatch = await bcrypt.compare(password, hashedPassword);
+        const isMatch = await argon2.verify(password, hashedPassword);
         if (!isMatch) {
           hashedPassword = "";
           return done(null, false, { message: "Failed_Password" });

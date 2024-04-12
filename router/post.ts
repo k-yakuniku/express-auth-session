@@ -1,5 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
-import bcrypt from "bcrypt";
+import argon2 from "argon2";
 import { IUsersSelect, UsersModel } from "../db/Users";
 
 const router = express.Router();
@@ -26,7 +26,7 @@ router.post("/create", async (req, res) => {
     if (!email || !password) throw new Error("Not_Input").message;
     const existUser = await UsersModel.findOne({ email });
     if (existUser) throw new Error("Exist_User").message;
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await argon2.hash(password);
     const newUser = await UsersModel.create({
       email,
       hashedPassword,
@@ -65,7 +65,7 @@ router.delete("/delete", sessionChecker, async (req, res) => {
     const user = await UsersModel.findOne({ email });
     if (!user) throw new Error("Email_MisMatched").message;
     let { hashedPassword } = user.toObject();
-    const isMatch = await bcrypt.compare(password, hashedPassword);
+    const isMatch = await argon2.verify(password, hashedPassword);
     hashedPassword = "";
     if (!isMatch) {
       throw new Error("Password_MisMatched").message;
