@@ -1,8 +1,6 @@
 import { model, Schema, Document } from "mongoose";
-// import { v4 as uuidv4, validate } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import { check } from "express-validator";
-
-import crypto from "crypto";
 
 export interface IUsers extends Document {
   _id: string;
@@ -22,7 +20,7 @@ export interface IUsersSelect {
   updatedAt: Date;
 }
 const UsersSchema = new Schema<IUsers>({
-  _id: { type: String, default: crypto.randomUUID() },
+  _id: { type: String, default: uuidv4() },
   name: { type: String, required: false },
   introduction: { type: String, required: false },
   email: {
