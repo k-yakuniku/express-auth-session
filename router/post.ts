@@ -1,11 +1,8 @@
 import express, { NextFunction, Request, Response } from "express";
-import argon2 from "argon2";
-import { IUsersSelect, UsersModel } from "../db/Users";
+import { Decrypt, Encrypt, IUsersSelect, UsersModel } from "../db/Users";
 
 const router = express.Router();
-// interface RequestWithUser extends Request {
-//   user?: IUsersSelect;
-// }
+
 // Express.jsの型定義を拡張して、Requestオブジェクトがuserプロパティを持つことをExpress.jsに伝える
 // TypeScriptの宣言マージ。
 declare module "express-serve-static-core" {
@@ -26,11 +23,12 @@ router.post("/create", async (req, res) => {
     if (!email || !password) throw new Error("Not_Input").message;
     const existUser = await UsersModel.findOne({ email });
     if (existUser) throw new Error("Exist_User").message;
-    const hashedPassword = await argon2.hash(password);
+    let cipherPass = Encrypt(password);
     const newUser = await UsersModel.create({
       email,
-      hashedPassword,
+      hashedPassword: cipherPass,
     });
+    cipherPass = "";
     if (!newUser) throw new Error("Failed_create").message;
     const { email: v, ...rest } = newUser;
     return res.json(email);
@@ -65,9 +63,8 @@ router.delete("/delete", sessionChecker, async (req, res) => {
     const user = await UsersModel.findOne({ email });
     if (!user) throw new Error("Email_MisMatched").message;
     let { hashedPassword } = user.toObject();
-    const isMatch = await argon2.verify(password, hashedPassword);
-    hashedPassword = "";
-    if (!isMatch) {
+    const pass = Decrypt(hashedPassword);
+    if (pass === password) {
       throw new Error("Password_MisMatched").message;
     } else {
       const msg = await UsersModel.deleteOne({ email });
