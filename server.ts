@@ -7,10 +7,11 @@ import auth from "./router/auth";
 import passport, { authenticate, initialize } from "passport";
 import { passportInitialize } from "./middleware";
 import session from "express-session";
-import { UsersModel } from "./db/Users";
+import { Decrypt, Encrypt, UsersModel } from "./db/Users";
 
 const app = express();
-const PORT = process.env.PUBLIC_PORT;
+// const PORT = process.env.PUBLIC_PORT;
+const PORT = 5000;
 
 // .env
 config();
@@ -98,7 +99,20 @@ app.get("/", async (req, res) => {
   if (!usersList) return res.json("Not_UserList");
   else return res.json(usersList);
 });
-
+app.post("/test", (req, res) => {
+  const { password } = req.body;
+  if (!password) return;
+  const ciphertext = Encrypt(password);
+  if (!ciphertext) return;
+  const deciphertext = Decrypt(ciphertext);
+  return res.json({ ciphertext, deciphertext });
+});
+app.post("/test1", (req, res) => {
+  const { password } = req.body;
+  if (!password) return;
+  const deciphertext = Decrypt(password);
+  return res.json({ deciphertext });
+});
 passportInitialize(passport);
 
 app.listen(PORT, () => {
