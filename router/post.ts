@@ -1,7 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { IUsersSelect, UsersModel } from "../db/Users";
-import passport from "passport";
 
 const router = express.Router();
 // interface RequestWithUser extends Request {

@@ -1,5 +1,5 @@
 import { model, Schema, Document } from "mongoose";
-//import { v4 as uuidv4, validate } from "uuid";
+// import { v4 as uuidv4, validate } from "uuid";
 import { check } from "express-validator";
 import crypto from "crypto";
 
@@ -31,7 +31,7 @@ const UsersSchema = new Schema<IUsers>({
     validate: {
       validator: (v: string) => {
         //return /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/.test(v);
-        return check(v).isEmail().normalizeEmail();
+        return check("email").isEmail().normalizeEmail();
       },
       message: (props) => `${props.value}Not_Email_Format`,
     },
