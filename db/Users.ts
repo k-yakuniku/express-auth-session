@@ -1,6 +1,6 @@
 import { model, Schema, Document } from "mongoose";
-//import { v4 as uuidv4 } from "uuid";
-import { nanoid } from "nanoid";
+import { v4 as uuidv4 } from "uuid";
+//import { nanoid } from "nanoid";
 import cryptojs from "crypto-js";
 import { check } from "express-validator";
 
@@ -48,7 +48,7 @@ export interface IUsersSelect {
   updatedAt: Date;
 }
 const UsersSchema = new Schema<IUsers>({
-  _id: { type: String, default: nanoid() },
+  _id: { type: String, default: uuidv4() },
   name: { type: String, required: false },
   introduction: { type: String, required: false },
   email: {

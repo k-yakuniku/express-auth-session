@@ -69,9 +69,7 @@ const db_applicationName = process.env.MONGODN_APPLICATION_NAME as string;
 
 mongoose
   .connect(
-    `mongodb+srv://${db_username}:${db_password}
-    @${db_hostName}/${db_databaseName}
-    ?retryWrites=true&w=majority&appName=${db_applicationName}`
+    `mongodb+srv://${db_username}:${db_password}@${db_hostName}/${db_databaseName}?retryWrites=true&w=majority&appName=${db_applicationName}`
   )
   .then(() => console.log("Connect_Success"))
   .catch((e) => console.log(e));
