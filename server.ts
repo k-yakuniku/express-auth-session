@@ -10,11 +10,14 @@ import session from "express-session";
 import { Decrypt, Encrypt, UsersModel } from "./db/Users";
 
 const app = express();
-// const PORT = process.env.PUBLIC_PORT;
-const PORT = 5000;
 
 // .env
 config();
+// https://zenn.dev/knaka0209/articles/9a72a4790d99e7
+// https://kotsukotsu.work/tech/2020-08-27-vercel-serverless-functions-web-api-%E3%82%92%E3%83%87%E3%83%97%E3%83%AD%E3%82%A4%E3%81%99%E3%82%8B/
+// express API を設置できる server??
+
+const PORT = process.env.PUBLIC_PORT || 5000;
 
 //#region  express expansions
 const ORIGIN_URL = process.env.PUBLIC_ORIGIN_URL as string;
@@ -58,17 +61,22 @@ app.use(express.json());
 //#endregion
 
 //#region Mongodb Connect
-
-const password = process.env.MONGODB_PASSWORD as string;
-const databaseName = process.env.MONGODN_DATABASE_NAME as string;
+const db_username = process.env.MONGODB_USERNAME as string;
+const db_password = process.env.MONGODB_PASSWORD as string;
+const db_hostName = process.env.MONGODN_HOST_NAME as string;
+const db_databaseName = process.env.MONGODN_DATABASE_NAME as string;
+const db_applicationName = process.env.MONGODN_APPLICATION_NAME as string;
 
 mongoose
   .connect(
-    `mongodb+srv://mongodb:${password}@clustertest.kcqb7op.mongodb.net/${databaseName}?retryWrites=true&w=majority&appName=ClusterTest`
+    `mongodb+srv://${db_username}:${db_password}
+    @${db_hostName}/${db_databaseName}
+    ?retryWrites=true&w=majority&appName=${db_applicationName}`
   )
   .then(() => console.log("Connect_Success"))
   .catch((e) => console.log(e));
-
+// retryWrites=true: 書き込み操作が初めて失敗した場合に再試行するかどうか
+// w=majority: 書き込み操作が成功と見なされる前に、レプリカセットの過半数が操作を確認する,dataの整合性を保つ
 //#endregion
 
 // expres.session initialize
